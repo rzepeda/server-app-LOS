@@ -1,0 +1,20 @@
+version: 1
+name: server-app-starter
+image: ghcr.io/TU_USUARIO_GITHUB/server-app-starter:main
+container_name: srv-server-app-starter
+container_port: 8000
+
+public:
+  enabled: true
+  subdomain: starter  # Quedará accesible en https://starter.agentictools.uk
+
+healthcheck:
+  path: /health
+
+database:
+  postgres: true
+  name: db_starter
+
+secrets:
+  required:
+    - OPENAI_API_KEY
