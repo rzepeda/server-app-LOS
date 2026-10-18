@@ -1,19 +1,19 @@
 version: 1
-name: server-app-starter
-image: ghcr.io/rzepeda/server-app-starter:main
-container_name: srv-server-app-starter
+name: server-app-los
+image: ghcr.io/rzepeda/server-app-los:main
+container_name: srv-server-app-los
 container_port: 8000
 
 public:
   enabled: true
-  subdomain: starter  # Quedará accesible en https://starter.agentictools.uk
+  subdomain: los  # Quedará accesible en https://los.agentictools.uk
 
 healthcheck:
   path: /health
 
 database:
   postgres: true
-  name: db_starter
+  name: los
 
 secrets:
   required:
