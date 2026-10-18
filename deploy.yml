@@ -1,6 +1,6 @@
 version: 1
 name: server-app-starter
-image: ghcr.io/TU_USUARIO_GITHUB/server-app-starter:main
+image: ghcr.io/rzepeda/server-app-starter:main
 container_name: srv-server-app-starter
 container_port: 8000
 
