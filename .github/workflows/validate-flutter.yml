@@ -1,0 +1,46 @@
+name: Validate Flutter Web
+
+on:
+  pull_request:
+    paths:
+      - 'app/frontend/**'
+      - '.github/workflows/validate-flutter.yml'
+  push:
+    branches:
+      - 'feature/interactive-los-grid'
+    paths:
+      - 'app/frontend/**'
+      - '.github/workflows/validate-flutter.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-validation:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Flutter (same version as Docker build)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: stable
+          cache: true
+
+      - name: Resolve Flutter dependencies
+        run: flutter pub get
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Compile Flutter Web
+        run: flutter build web --release

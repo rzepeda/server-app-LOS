@@ -1,30 +1,53 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:app_starter/grid_geometry.dart';
 import 'package:app_starter/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('horizontal segment crosses expected cells and vertical edges', () {
+    final trace = traceGridLine(
+      const GridCell(2, 1),
+      const GridCell(2, 4),
+      rows: 20,
+      columns: 20,
+    );
+    expect(trace.cells, {
+      const GridCell(2, 1),
+      const GridCell(2, 2),
+      const GridCell(2, 3),
+      const GridCell(2, 4),
+    });
+    expect(trace.edges, {
+      const GridEdge.vertical(2, 2),
+      const GridEdge.vertical(3, 2),
+      const GridEdge.vertical(4, 2),
+    });
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('diagonal segment highlights crossing boundaries', () {
+    final trace = traceGridLine(
+      const GridCell(1, 1),
+      const GridCell(3, 2),
+      rows: 20,
+      columns: 20,
+    );
+    expect(trace.cells.contains(const GridCell(1, 1)), isTrue);
+    expect(trace.cells.contains(const GridCell(3, 2)), isTrue);
+    expect(trace.edges.any((e) => e.isVertical), isTrue);
+    expect(trace.edges.any((e) => !e.isVertical), isTrue);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('renders grid and toggles a marker', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const LosApp());
+    expect(find.byType(GridScreen), findsOneWidget);
+    final paint = find.byType(CustomPaint).last;
+    await tester.tapAt(tester.getCenter(paint));
     await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tapAt(tester.getCenter(paint));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
   });
 }
