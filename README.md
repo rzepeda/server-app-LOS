@@ -83,3 +83,21 @@ git push origin main
 3. It securely mounts your secrets and connects the app to the database network.
 4. It generates a new Caddy routing file for `budget.agentictools.uk`.
 5. You can visit `https://budget.agentictools.uk` in your browser and see your new app live!
+
+## appLOS: Android APK publication
+
+Every push to `main` (or manual run of **Build and Publish to GHCR**) now:
+
+1. Compiles the Flutter Android release APK with Flutter 3.19.0 and JDK 17.
+2. Uploads `app/frontend/app-release.apk` as a GitHub Actions artifact (`appLOS-release-apk`, retained 14 days).
+3. Copies that file into the published Docker image as `/app/app-release.apk`.
+4. Advertises the APK in `deploy.yml` for the homeserver `server-manager` to extract and publish.
+
+With the APK Hub and Caddy static-file setup described in the server-manager guide already configured, the app is available at:
+`https://apks.agentictools.uk/server-app-los.apk`.
+
+The web application continues to build in the Dockerfile and deploy at `https://los.agentictools.uk`. The Android build receives `API_BASE_URL=https://los.agentictools.uk` at compile time for future networking; the current grid UI does not use a backend API.
+
+**Signing:** The existing Android Gradle configuration signs release APKs using a temporary debug key. For reliable installable *updates* across GitHub Actions runs, configure a persistent production signing key in GitHub secrets and update `android/app/build.gradle` before distributing the APK to users. Each workflow run assigns a monotonically increasing Android build number.
+
+**Verification:** Open GitHub Actions, confirm that the Android APK step and GHCR publication succeed, then check the deployment manager's logs for APK extraction and test the APK Hub URL. A pull request also checks that Flutter Web, tests and Android compilation succeed.
