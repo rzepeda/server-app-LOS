@@ -18,3 +18,7 @@ database:
 secrets:
   required:
     - OPENAI_API_KEY
+
+apk:
+  enabled: true
+  container_path: /app/app-release.apk
